@@ -525,6 +525,26 @@ export default function Auth() {
           <h2 className="display" style={{ margin: '0 0 4px', fontSize: 24, fontWeight: 800 }}>{mode === 'signup' ? 'Crée ton studio' : 'Bon retour'}</h2>
           <p style={{ margin: '0 0 22px', color: 'var(--text3)', fontSize: 14 }}>{mode === 'signup' ? 'Quelques secondes pour démarrer.' : 'Connecte-toi pour retrouver tes agents.'}</p>
 
+          {/* Bannière explicative pour l'application locale */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 10,
+            padding: '11px 13px',
+            background: '#F5EEE6',
+            border: '1px solid var(--border)',
+            borderRadius: 11,
+            fontSize: 12.5,
+            color: 'var(--text2)',
+            lineHeight: 1.45,
+            marginBottom: 16
+          }}>
+            <span style={{ fontSize: 15, userSelect: 'none', marginTop: 1 }}>ℹ</span>
+            <div>
+              <strong>Mode local hors-ligne</strong> : L'application enregistre toutes vos données (conversations, clés, agents) localement sur cet ordinateur. Les connexions sociales créent un profil local sécurisé.
+            </div>
+          </div>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
             <SocialButton icon={<GoogleIcon />} label="Continuer avec Google" onClick={() => openSocial('google')} />
             <SocialButton icon={<FacebookIcon />} label="Continuer avec Facebook" onClick={() => openSocial('facebook')} />
