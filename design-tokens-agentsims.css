@@ -1,0 +1,105 @@
+/* =====================================================================
+   AgentSims / Roost — Design tokens (source unique design → code)
+   Dérivés de design-brief-agentsims-claude-design.md.
+   À importer globalement. Ne hardcode aucune valeur ailleurs.
+   ===================================================================== */
+
+:root {
+  /* Neutres chauds — clair */
+  --color-bg: #FAF7F2;
+  --color-surface: #FFFFFF;
+  --color-border: #ECE6DD;
+  --color-text: #2A251F;
+  --color-text-secondary: #6B6358;
+  --color-text-muted: #A89F92;
+
+  /* Accents de marque */
+  --color-primary: #E07856;       /* terracotta — actions, focus, liens */
+  --color-primary-hover: #CC6747;
+  --color-secondary: #2FB3A3;      /* teal — « vivant / actif » */
+  --color-secondary-deep: #1E8C7F;
+
+  /* États sémantiques (plumbob) — toujours doublés d'une icône + label */
+  --color-healthy: #3DBE7A;        /* 🟢 sain */
+  --color-attention: #F2B23C;      /* 🟡 attention */
+  --color-blocked: #E5564B;        /* 🔴 bloqué */
+  --color-info: #3CA7D6;           /* ℹ️ info / statut système */
+  --color-pending: #A89F92;        /* ⏳ en file / en attente */
+
+  /* Couleurs des 4 Vitals (besoins) */
+  --vital-energy: #F2A93C;         /* ⚡ Énergie (budget) */
+  --vital-motivation: #F07A3C;     /* 🍔 Motivation (file de tâches) */
+  --vital-mood: #EC6A86;           /* 😊 Humeur (taux de réussite) */
+  --vital-clarity: #3CA7D6;        /* 🧠 Clarté (contexte) */
+
+  /* Rayons */
+  --radius-sm: 8px;
+  --radius-md: 12px;     /* boutons, champs */
+  --radius-lg: 16px;     /* cartes */
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* Ombres douces et chaudes */
+  --shadow-rest: 0 2px 8px rgba(60, 40, 20, 0.06);
+  --shadow-hover: 0 6px 20px rgba(60, 40, 20, 0.10);
+
+  /* Typographie */
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Échelle typographique (taille / interligne) */
+  --text-display: 32px;  --leading-display: 40px;
+  --text-h1: 24px;       --leading-h1: 32px;
+  --text-h2: 20px;       --leading-h2: 28px;
+  --text-h3: 16px;       --leading-h3: 24px;
+  --text-body: 14px;     --leading-body: 20px;
+  --text-small: 13px;    --leading-small: 18px;
+  --text-caption: 12px;  --leading-caption: 16px;
+
+  /* Espacement — base 4px / rythme 8pt */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px;  --space-4: 16px;
+  --space-6: 24px; --space-8: 32px; --space-12: 48px;
+  --sidebar-width: 240px;
+
+  /* Motion */
+  --motion-fast: 200ms;
+  --motion-base: 280ms;
+}
+
+/* Variante sombre — charbon chaud (pas bleu-froid) */
+:root[data-theme="dark"] {
+  --color-bg: #161311;
+  --color-surface: #211D1A;
+  --color-border: #322C27;
+  --color-text: #F3EEE7;
+  --color-text-secondary: #B5AB9E;
+  --color-text-muted: #8A8073;
+  /* Accents et sémantiques inchangés pour la cohérence de marque. */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion-fast: 0ms; --motion-base: 0ms; }
+}
+
+/* =====================================================================
+   Extrait de config Tailwind (à reporter dans tailwind.config.ts) :
+
+   theme: {
+     extend: {
+       colors: {
+         bg: 'var(--color-bg)',
+         surface: 'var(--color-surface)',
+         border: 'var(--color-border)',
+         text: { DEFAULT: 'var(--color-text)', secondary: 'var(--color-text-secondary)', muted: 'var(--color-text-muted)' },
+         primary: { DEFAULT: 'var(--color-primary)', hover: 'var(--color-primary-hover)' },
+         secondary: { DEFAULT: 'var(--color-secondary)', deep: 'var(--color-secondary-deep)' },
+         healthy: 'var(--color-healthy)', attention: 'var(--color-attention)', blocked: 'var(--color-blocked)',
+         vital: { energy: 'var(--vital-energy)', motivation: 'var(--vital-motivation)', mood: 'var(--vital-mood)', clarity: 'var(--vital-clarity)' },
+       },
+       borderRadius: { sm: 'var(--radius-sm)', md: 'var(--radius-md)', lg: 'var(--radius-lg)', xl: 'var(--radius-xl)', pill: 'var(--radius-pill)' },
+       boxShadow: { rest: 'var(--shadow-rest)', hover: 'var(--shadow-hover)' },
+       fontFamily: { display: 'var(--font-display)', body: 'var(--font-body)', mono: 'var(--font-mono)' },
+     }
+   }
+   ===================================================================== */

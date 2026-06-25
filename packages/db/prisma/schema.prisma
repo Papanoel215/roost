@@ -1,0 +1,274 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String?
+  email         String?        @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  
+  // Custom user fields
+  passwordHash  String?        // For Credentials provider (Email/Password login)
+  settings      Json?          // Storing settings as JSON
+  conversations Conversation[] // Storing conversations in a table
+  createdAt     DateTime       @default(now())
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  userId    String
+  agentKey  String
+  title     String
+  messages  Json     // ChatMsg[] stored as JSON
+  updatedAt DateTime @default(now()) @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum AgentClass {
+  FRONTEND
+  BACKEND
+  TESTS
+  RESEARCH
+  DEVOPS
+  DOCS
+  REFACTOR
+  GENERALIST
+}
+
+enum Engine {
+  CLAUDE
+  GEMINI
+}
+
+enum PermissionMode {
+  ASK
+  AUTO
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum MissionStatus {
+  BACKLOG
+  QUEUED
+  RUNNING
+  NEEDS_REVIEW
+  DONE
+  FAILED
+  CANCELLED
+}
+
+enum RunState {
+  PROVISIONING
+  READY
+  RUNNING
+  BLOCKED
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum ArtifactType {
+  DIFF
+  PLAN
+  SCREENSHOT
+  REPORT
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum NotifKind {
+  PERMISSION
+  COMPLETED
+  FAILED
+  BUDGET
+  BLOCKED
+}
+
+enum Provider {
+  ANTHROPIC
+  GEMINI
+}
+
+model Credential {
+  id         String   @id @default(cuid())
+  userId     String
+  provider   Provider
+  ciphertext String
+  label      String?
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, provider])
+}
+
+model Agent {
+  id             String         @id @default(cuid())
+  userId         String
+  name           String
+  avatarSeed     String
+  klass          AgentClass
+  engine         Engine
+  model          String
+  persona        String
+  traitId        String?
+  permissionMode PermissionMode
+  allowedTools   String[]
+  mcpServerIds   String[]
+  maxTurns       Int            @default(40)
+  budgetCapUsd   Decimal?
+  createdAt      DateTime       @default(now())
+  runs           Run[]
+}
+
+model Workspace {
+  id            String  @id @default(cuid())
+  userId        String
+  name          String
+  repoUrl       String?
+  defaultBranch String  @default("main")
+}
+
+model Mission {
+  id          String        @id @default(cuid())
+  userId      String
+  title       String
+  prompt      String
+  workspaceId String
+  agentId     String?
+  priority    Priority      @default(NORMAL)
+  status      MissionStatus
+  recipeId    String?
+  createdAt   DateTime      @default(now())
+  runs        Run[]
+}
+
+model Run {
+  id                 String     @id @default(cuid())
+  missionId          String
+  agentId            String
+  userId             String
+  engineSessionId    String?
+  sandboxId          String?
+  initialSnapshotRef String?
+  state              RunState
+  blockedReason      String?
+  startedAt          DateTime?
+  endedAt            DateTime?
+  inputTokens        Int        @default(0)
+  outputTokens       Int        @default(0)
+  costUsd            Decimal    @default(0)
+  events             Event[]
+  artifacts          Artifact[]
+  mission            Mission    @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  agent              Agent      @relation(fields: [agentId], references: [id], onDelete: Cascade)
+}
+
+model Event {
+  id      String   @id @default(cuid())
+  runId   String
+  agentId String
+  seq     Int
+  ts      DateTime
+  type    String
+  payload Json
+  run     Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId, seq])
+}
+
+model Artifact {
+  id        String         @id @default(cuid())
+  runId     String
+  type      ArtifactType
+  ref       String
+  status    ApprovalStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+  run       Run            @relation(fields: [runId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  kind      NotifKind
+  agentId   String?
+  runId     String?
+  message   String
+  read      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+}
+
+model Snapshot {
+  id        String   @id @default(cuid())
+  runId     String
+  ref       String
+  createdAt DateTime @default(now())
+}
+
+model Recipe {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  template  String
+  variables Json
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  agentIds  String[]
+  pipeline  Json?
+}
