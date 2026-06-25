@@ -1,0 +1,54 @@
+{
+  "name": "roost-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Roost — pilotez toute votre équipe d'agents IA depuis un seul poste de commande.",
+  "author": "Roost",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "make-icon": "node scripts/make-icon.mjs",
+    "serve": "node scripts/serve.mjs",
+    "app": "npm run build && electron .",
+    "app:run": "electron .",
+    "dist:win": "npm run build && electron-builder --win portable"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^42.4.1",
+    "electron-builder": "^26.15.3",
+    "png-to-ico": "^3.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sharp": "^0.35.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  },
+  "build": {
+    "appId": "studio.roost.app",
+    "productName": "Roost",
+    "directories": {
+      "output": "release",
+      "buildResources": "."
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "roost.ico"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "icon": "roost.ico"
+    },
+    "portable": {
+      "artifactName": "Roost.exe"
+    }
+  }
+}
