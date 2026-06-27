@@ -3,18 +3,22 @@ import type { ChatMsg } from './types'
 
 export interface Settings {
   profile: { name: string; handle: string; timezone: string; bio: string }
-  keys: { anthropic: string; gemini: string }
-  tested: { anthropic: boolean; gemini: boolean }
+  keys: { anthropic: string; openai: string; gemini: string; groq: string; xai: string }
+  tested: { anthropic: boolean; openai: boolean; gemini: boolean; groq: boolean; xai: boolean }
   notif: { push: boolean; perms: boolean; email: boolean; weekly: boolean }
   mfa: boolean
+  soundEnabled: boolean
+  musicEnabled: boolean
 }
 
 const DEFAULT: Settings = {
   profile: { name: 'Maxime', handle: '@maxime', timezone: 'Europe/Paris', bio: "Maker solo qui pilote une équipe d'agents." },
-  keys: { anthropic: '', gemini: '' },
-  tested: { anthropic: false, gemini: false },
+  keys: { anthropic: '', openai: '', gemini: '', groq: '', xai: '' },
+  tested: { anthropic: false, openai: false, gemini: false, groq: false, xai: false },
   notif: { push: true, perms: true, email: false, weekly: true },
   mfa: false,
+  soundEnabled: true,
+  musicEnabled: false,
 }
 
 function getCurrentUserEmail(): string {
@@ -37,6 +41,8 @@ function load(): Settings {
       tested: { ...DEFAULT.tested, ...(raw.tested || {}) },
       notif: { ...DEFAULT.notif, ...(raw.notif || {}) },
       mfa: typeof raw.mfa === 'boolean' ? raw.mfa : DEFAULT.mfa,
+      soundEnabled: typeof raw.soundEnabled === 'boolean' ? raw.soundEnabled : DEFAULT.soundEnabled,
+      musicEnabled: typeof raw.musicEnabled === 'boolean' ? raw.musicEnabled : DEFAULT.musicEnabled,
     }
   } catch {
     return DEFAULT
@@ -56,12 +62,14 @@ function commit(next: Settings) {
 
 export const getSettings = () => state
 export const setProfile = (p: Partial<Settings['profile']>) => commit({ ...state, profile: { ...state.profile, ...p } })
-export const setKey = (provider: 'anthropic' | 'gemini', value: string) =>
+export const setKey = (provider: 'anthropic' | 'openai' | 'gemini' | 'groq' | 'xai', value: string) =>
   commit({ ...state, keys: { ...state.keys, [provider]: value }, tested: { ...state.tested, [provider]: false } })
-export const setTested = (provider: 'anthropic' | 'gemini', val: boolean) =>
+export const setTested = (provider: 'anthropic' | 'openai' | 'gemini' | 'groq' | 'xai', val: boolean) =>
   commit({ ...state, tested: { ...state.tested, [provider]: val } })
 export const setNotif = (p: Partial<Settings['notif']>) => commit({ ...state, notif: { ...state.notif, ...p } })
 export const setMfa = (v: boolean) => commit({ ...state, mfa: v })
+export const setSoundPrefs = (prefs: { soundEnabled: boolean; musicEnabled: boolean }) =>
+  commit({ ...state, soundEnabled: prefs.soundEnabled, musicEnabled: prefs.musicEnabled })
 
 function subscribe(cb: () => void) {
   subs.add(cb)

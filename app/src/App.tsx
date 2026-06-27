@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useHashRoute } from './useHashRoute'
 import { useSession } from './lib/auth'
 import { useSettings } from './lib/store'
@@ -26,6 +26,11 @@ import ComingSoon from './components/ComingSoon'
 import CommandPalette from './components/CommandPalette'
 import NewMissionModal from './components/NewMissionModal'
 import UpdateBanner from './components/UpdateBanner'
+import HUD from './components/HUD'
+import AchievementToast, { fireAchievement } from './components/AchievementToast'
+import { useRuns } from './lib/runtime'
+import { recordRun } from './lib/gamification'
+import { playSound, startAmbient, setSfxEnabled, setMusicEnabled as setSoundMusicEnabled } from './lib/sound'
 
 export type { Mode } from './WorldView'
 
@@ -33,12 +38,53 @@ export default function App() {
   const route = useHashRoute()
   const session = useSession()
   const settings = useSettings()
+  const runs = useRuns()
+  const seenRunIds = useRef<Set<string>>(new Set())
   const [onboarded, setOnboarded] = useState(false)
 
   useEffect(() => {
     const email = session?.email || 'default'
     setOnboarded(localStorage.getItem(`roost.onboarded.${email}`) === '1')
   }, [session])
+
+  // Sync sound library prefs whenever settings change
+  useEffect(() => {
+    setSfxEnabled(settings.soundEnabled)
+    setSoundMusicEnabled(settings.musicEnabled)
+  }, [settings.soundEnabled, settings.musicEnabled])
+
+  // Start ambient music on mount if enabled
+  useEffect(() => {
+    if (settings.musicEnabled) {
+      startAmbient()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Watch runs for completion and trigger gamification + sounds
+  useEffect(() => {
+    for (const run of runs) {
+      if (seenRunIds.current.has(run.id)) continue
+      if (run.status === 'success' || run.status === 'failed') {
+        seenRunIds.current.add(run.id)
+        const status = run.status === 'success' ? 'success' : 'error'
+        const achievements = recordRun(run.agentKey, { status, durationMs: run.durationMs })
+        for (const a of achievements) {
+          fireAchievement({ title: a.title, description: a.description, icon: a.icon })
+          playSound('achievement')
+        }
+        if (run.status === 'success') {
+          playSound('success')
+        } else {
+          playSound('fail')
+        }
+      } else if (run.status === 'running') {
+        // Mark running runs as seen so we process them only on completion
+        // (do not add to seenRunIds yet — we need to catch the terminal state)
+      }
+    }
+  }, [runs])
+
   const [motion, setMotion] = useState(true)
   const [palette, setPalette] = useState(false)
   const [newMission, setNewMission] = useState(false)
@@ -110,8 +156,10 @@ export default function App() {
   return (
     <UiContext.Provider value={ui}>
       <div data-motion={motion ? 'on' : 'off'}>
+        <HUD />
         <UpdateBanner />
         {screen()}
+        <AchievementToast />
 
         {palette && <CommandPalette onClose={() => setPalette(false)} />}
         {newMission && <NewMissionModal onClose={() => setNewMission(false)} />}

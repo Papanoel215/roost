@@ -26,7 +26,7 @@ export default function WorldView() {
         subtitle={`Studio · ${Object.keys(AGENTS).length} agents · ${Object.values(AGENTS).filter(a => a.state === 'working').length} actifs`}
         mode={mode}
         onMode={setMode}
-        contentStyle={{ padding: '20px 24px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}
+        contentStyle={{ padding: '20px 24px 24px', paddingTop: 56, display: 'flex', flexDirection: 'column', gap: 16 }}
       >
         <NeedsAttention />
         <Scene showGrid={mode === 'Construction'} onOpenAgent={setOpenAgent} />

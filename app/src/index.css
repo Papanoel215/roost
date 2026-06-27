@@ -286,3 +286,211 @@ button:focus-visible {
   outline: 3px solid rgba(224, 120, 86, 0.45);
   outline-offset: 2px;
 }
+
+/* =====================================================================
+   Game-feel animations & effects
+   ===================================================================== */
+
+/* ---- Keyframes ---- */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px var(--accent); }
+  50%       { box-shadow: 0 0 24px var(--accent), 0 0 48px rgba(47, 179, 163, .3); }
+}
+@keyframes xp-fill {
+  from { width: 0; }
+  to   { width: var(--xp-width, 50%); }
+}
+@keyframes level-up {
+  0%   { transform: scale(1);   filter: brightness(1); }
+  50%  { transform: scale(1.4); filter: brightness(1.8) drop-shadow(0 0 12px gold); }
+  100% { transform: scale(1);   filter: brightness(1); }
+}
+@keyframes confetti-fall {
+  0%   { transform: translateY(-10px) rotate(0deg);   opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+@keyframes slide-in-right {
+  from { transform: translateX(120%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes slide-out-right {
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(120%); opacity: 0; }
+}
+@keyframes scanlines {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 4px; }
+}
+@keyframes particle-drift {
+  0%   { transform: translateY(0)    translateX(0);    opacity: .4; }
+  33%  { transform: translateY(-30px) translateX(15px); opacity: .7; }
+  66%  { transform: translateY(-15px) translateX(-10px);opacity: .5; }
+  100% { transform: translateY(0)    translateX(0);    opacity: .4; }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes achievement-in {
+  0%   { transform: translateX(100%); opacity: 0; }
+  80%  { transform: translateX(-5px); }
+  100% { transform: translateX(0);    opacity: 1; }
+}
+@keyframes drain {
+  from { width: 100%; }
+  to   { width: 0; }
+}
+@keyframes hud-slidein {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+@keyframes daily-bounce {
+  0%, 100% { transform: scale(1); }
+  40%       { transform: scale(1.08); }
+  60%       { transform: scale(.96); }
+}
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50%       { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+/* ---- Utility animation classes ---- */
+.float          { animation: float          3s ease-in-out infinite; }
+.pulse-glow     { animation: pulse-glow     2s ease-in-out infinite; }
+.bob            { animation: bob            2s ease-in-out infinite; }
+.spin-slow      { animation: spin-slow      8s linear infinite; }
+.slide-in-right { animation: slide-in-right .35s cubic-bezier(.2, .8, .2, 1) both; }
+.slide-out-right{ animation: slide-out-right .3s ease-in both; }
+.achievement-in { animation: achievement-in .4s cubic-bezier(.2, .8, .2, 1) both; }
+
+/* ---- Stat bar component ---- */
+.stat-bar-track {
+  background: rgba(255, 255, 255, .08);
+  border-radius: 99px;
+  height: 8px;
+  overflow: hidden;
+}
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent), #1de9d5);
+  animation: xp-fill .8s ease-out both;
+}
+
+/* ---- Quest card ---- */
+.quest-card {
+  background: linear-gradient(135deg, #1a1208, #2a1f10);
+  border: 1px solid #8B6914;
+  border-radius: 12px;
+  padding: 16px;
+  transition: transform .2s, box-shadow .2s;
+}
+.quest-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139, 105, 20, .3);
+}
+.quest-card.boss {
+  border-color: #e74c3c;
+  box-shadow: 0 0 12px rgba(231, 76, 60, .2);
+}
+.difficulty-star {
+  color: #f39c12;
+  font-size: 12px;
+}
+.xp-badge {
+  background: linear-gradient(135deg, #f39c12, #f1c40f);
+  color: #000;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+.coin-badge {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+/* ---- HUD ---- */
+.game-hud {
+  animation: hud-slidein .4s ease both;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.hud-coin {
+  color: #FFD700;
+  font-weight: 800;
+  font-size: 13px;
+}
+.hud-xp {
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+/* ---- Agent sprite ---- */
+.agent-sprite {
+  position: relative;
+  transition: transform .2s, filter .2s;
+  cursor: pointer;
+}
+.agent-sprite:hover {
+  transform: scale(1.12);
+  filter: drop-shadow(0 4px 12px rgba(47, 179, 163, .5));
+}
+.agent-sprite.active  { animation: pulse-glow 1.5s ease-in-out infinite; }
+.agent-sprite.waiting { animation: bob        1.8s ease-in-out infinite; }
+
+.agent-level-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000;
+  font-size: 10px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  z-index: 2;
+}
+.agent-xp-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, .15);
+  overflow: hidden;
+  margin-top: 4px;
+}
+.agent-xp-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #2FB3A3, #1de9d5);
+  transition: width .6s ease;
+}
+
+/* ---- Scanline overlay (retro panel feel) ---- */
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, .05) 2px,
+    rgba(0, 0, 0, .05) 4px
+  );
+  pointer-events: none;
+  animation: scanlines .1s steps(1) infinite;
+}
